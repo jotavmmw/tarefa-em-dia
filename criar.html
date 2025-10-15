@@ -207,6 +207,37 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
+        .loader {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top: 2px solid transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .btn-loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn-content {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         @media (max-width: 768px) {
             .form-row {
                 flex-direction: column;
@@ -297,14 +328,16 @@
                     <span>↶</span> Cancelar
                 </button>
                 <button type="button" class="btn btn-primary" id="create-btn">
-                    <span>✓</span> Criar Tarefa
+                    <div class="btn-content">
+                        <div class="loader" id="create-loader"></div>
+                        <span id="create-text">✓ Criar Tarefa</span>
+                    </div>
                 </button>
             </div>
         </form>
     </div>
 
     <script>
-        // Configuração de seleção de prioridade
         document.querySelectorAll('.priority-option').forEach(option => {
             option.addEventListener('click', function () {
                 document.querySelectorAll('.priority-option').forEach(opt => {
@@ -314,7 +347,6 @@
             });
         });
 
-        // Configurar botão cancelar
         document.getElementById('cancel-btn').addEventListener('click', function () {
             if (confirm('Deseja cancelar a criação da tarefa?')) {
                 window.location.href = 'index.html';
@@ -325,6 +357,14 @@
         const WRITE_KEY = 'minha_chave_secreta_123';
 
         document.getElementById('create-btn').addEventListener('click', async () => {
+            const createBtn = document.getElementById('create-btn');
+            const createLoader = document.getElementById('create-loader');
+            const createText = document.getElementById('create-text');
+
+            createBtn.classList.add('btn-loading');
+            createLoader.style.display = 'inline-block';
+            createText.textContent = 'Criando...';
+
             const solicitante = document.getElementById('solicitante').value.trim();
             const responsaveis = document.getElementById('responsaveis').value.trim();
             const titulo = document.getElementById('titulo').value.trim();
@@ -334,6 +374,9 @@
 
             if (!selectedPriority) {
                 alert('Por favor, selecione uma prioridade.');
+                createBtn.classList.remove('btn-loading');
+                createLoader.style.display = 'none';
+                createText.textContent = '✓ Criar Tarefa';
                 return;
             }
 
@@ -341,10 +384,12 @@
 
             if (!titulo) {
                 alert('Por favor, preencha o título da tarefa.');
+                createBtn.classList.remove('btn-loading');
+                createLoader.style.display = 'none';
+                createText.textContent = '✓ Criar Tarefa';
                 return;
             }
 
-            // Criar FormData em vez de JSON
             const formData = new FormData();
             formData.append('key', WRITE_KEY);
             formData.append('titulo', titulo);
@@ -355,7 +400,6 @@
             formData.append('prioridade', prioridade);
 
             try {
-                // Converter FormData para URL encoded string
                 const params = new URLSearchParams();
                 for (const [key, value] of formData) {
                     params.append(key, value);
@@ -391,10 +435,13 @@
             } catch (error) {
                 console.error('Erro:', error);
                 alert('Erro de conexão. Verifique sua internet e tente novamente.');
+            } finally {
+                createBtn.classList.remove('btn-loading');
+                createLoader.style.display = 'none';
+                createText.textContent = '✓ Criar Tarefa';
             }
         });
     </script>
 </body>
-
 
 </html>
