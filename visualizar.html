@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tarefas Criadas - Tarefa em Dia</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .header {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .logo h1 {
+      font-size: 1.6rem;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: white;
+      color: #667eea;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 25px;
+      width: 100%;
+      max-width: 900px;
+      overflow-y: auto;
+    }
+
+    .page-title {
+      color: #333;
+      font-size: 1.6rem;
+      margin-bottom: 25px;
+      text-align: center;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .page-title:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .task-card {
+      border: 2px solid #e9ecef;
+      border-left-width: 6px;
+      border-radius: 12px;
+      padding: 20px;
+      transition: 0.3s;
+      background: #fff;
+    }
+
+    .task-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .priority-baixa {
+      border-left-color: #2ecc71;
+    }
+
+    .priority-media {
+      border-left-color: #f39c12;
+    }
+
+    .priority-alta {
+      border-left-color: #e74c3c;
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .task-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .priority-badge {
+      padding: 5px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      color: white;
+      text-transform: capitalize;
+    }
+
+    .priority-baixa .priority-badge {
+      background: #2ecc71;
+    }
+
+    .priority-media .priority-badge {
+      background: #f39c12;
+    }
+
+    .priority-alta .priority-badge {
+      background: #e74c3c;
+    }
+
+    .task-info {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .responsaveis {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0;
+    }
+
+    .responsavel-tag {
+      background: #e9ecef;
+      padding: 4px 8px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+    }
+
+    .task-desc {
+      color: #444;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .task-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <a href="index.html" class="logo">
+      <span>📋</span>
+      <h1>Tarefa em Dia</h1>
+    </a>
+    <button class="btn btn-primary" onclick="window.location.href='index.html'">Voltar</button>
+  </div>
+
+  <div class="container">
+    <h2 class="page-title">Tarefas Criadas</h2>
+    <div class="task-list" id="task-list">
+      <!-- Tarefas serão inseridas aqui -->
+    </div>
+  </div>
+
+  <script>
+    const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyb4qfXQxVPNa8zTlTTd-E4KYgJH9WHys0QtZJjcTitwaB4PsHugDfOWquwqmqpoty0Hg/exec';
+
+    async function carregarTarefas() {
+      try {
+        const res = await fetch(ENDPOINT); // GET
+        const json = await res.json();
+        if (!json.success) {
+          document.getElementById('task-list').innerHTML = '<p>Erro ao buscar tarefas.</p>';
+          return;
+        }
+        const tarefas = json.tasks || [];
+        const list = document.getElementById('task-list');
+        list.innerHTML = ''; // limpa
+        if (tarefas.length === 0) {
+          list.innerHTML = '<p>Nenhuma tarefa encontrada.</p>';
+          return;
+        }
+
+        tarefas.forEach(tarefa => {
+          const prioridade = (tarefa.prioridade || 'media').toLowerCase();
+          const card = document.createElement('div');
+          card.className = `task-card priority-${prioridade}`;
+
+          // tentar formatar data
+          let prazoText = '';
+          try {
+            prazoText = tarefa.prazo ? new Date(tarefa.prazo).toLocaleDateString('pt-BR') : '—';
+          } catch (e) { prazoText = tarefa.prazo || '—'; }
+
+          // responsaveis já vem como string (vírgula)
+          const responsaveisHTML = (tarefa.responsaveis || '').split(',').map(r => r.trim()).filter(r => r).map(r => `<span class="responsavel-tag">${r}</span>`).join('');
+
+          card.innerHTML = `
+        <div class="task-header">
+          <h3 class="task-title">${escapeHtml(tarefa.titulo)}</h3>
+          <span class="priority-badge">${escapeHtml(prioridade)}</span>
+        </div>
+        <div class="task-info"><strong>Solicitante:</strong> ${escapeHtml(tarefa.solicitante || '')}</div>
+        <div class="task-info"><strong>Prazo:</strong> ${escapeHtml(prazoText)}</div>
+        <div class="task-info"><strong>Responsáveis:</strong></div>
+        <div class="responsaveis">${responsaveisHTML}</div>
+        <div class="task-desc">${escapeHtml(tarefa.descricao || '')}</div>
+      `;
+          list.appendChild(card);
+        });
+
+      } catch (err) {
+        document.getElementById('task-list').innerHTML = '<p>Erro de rede ao carregar tarefas.</p>';
+        console.error(err);
+      }
+    }
+
+    // pequena função para evitar XSS ao inserir texto
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    window.addEventListener('load', carregarTarefas);
+  </script>
+</body>
+
+</html>

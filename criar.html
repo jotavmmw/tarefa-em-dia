@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Tarefa - Tarefa em Dia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .header {
+            width: 100%;
+            max-width: 650px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            font-size: 1.5rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            max-width: 650px;
+            height: auto;
+            max-height: 90vh;
+        }
+
+        .page-title {
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 8px;
+        }
+
+        .page-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            color: #444;
+            font-size: 0.85rem;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1.5px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        textarea {
+            height: 70px;
+            resize: none;
+        }
+
+        .priority-options {
+            display: flex;
+            gap: 6px;
+        }
+
+        .priority-option {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            border: 1.5px solid #e9ecef;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .priority-option:hover {
+            border-color: #667eea;
+        }
+
+        .priority-option.selected {
+            border-color: #667eea;
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .priority-low {
+            border-left: 2px solid #2ecc71;
+        }
+
+        .priority-medium {
+            border-left: 2px solid #f39c12;
+        }
+
+        .priority-high {
+            border-left: 2px solid #e74c3c;
+        }
+
+        .priority-label {
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .priority-desc {
+            font-size: 0.7rem;
+            color: #666;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 1.5px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+
+            .priority-options {
+                flex-direction: column;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a href="index.html" class="logo">
+            <span class="logo-icon">📋</span>
+            <h1>Tarefa em Dia</h1>
+        </a>
+    </div>
+
+    <div class="container">
+        <h2 class="page-title">Criar Nova Tarefa</h2>
+
+        <form>
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="solicitante">Solicitante</label>
+                        <input type="text" id="solicitante" placeholder="Nome do solicitante">
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="responsaveis">Responsáveis</label>
+                        <input type="text" id="responsaveis" placeholder="Nome do responsável">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="titulo">Título da Tarefa</label>
+                <input type="text" id="titulo" placeholder="Digite um título claro para a tarefa">
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição da Tarefa</label>
+                <textarea id="descricao" placeholder="Descreva detalhadamente a tarefa a ser realizada..."></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="prazo">Prazo para entrega</label>
+                        <input type="date" id="prazo">
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="prioridade">Prioridade</label>
+                        <div class="priority-options">
+                            <div class="priority-option priority-low" data-value="baixa">
+                                <div class="priority-label">Baixa</div>
+                                <div class="priority-desc">Sem urgência</div>
+                            </div>
+                            <div class="priority-option priority-medium selected" data-value="media">
+                                <div class="priority-label">Média</div>
+                                <div class="priority-desc">Importante</div>
+                            </div>
+                            <div class="priority-option priority-high" data-value="alta">
+                                <div class="priority-label">Alta</div>
+                                <div class="priority-desc">Urgente</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancel-btn">
+                    <span>↶</span> Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" id="create-btn">
+                    <span>✓</span> Criar Tarefa
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Configuração de seleção de prioridade
+        document.querySelectorAll('.priority-option').forEach(option => {
+            option.addEventListener('click', function () {
+                document.querySelectorAll('.priority-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+            });
+        });
+
+        // Configurar botão cancelar
+        document.getElementById('cancel-btn').addEventListener('click', function () {
+            if (confirm('Deseja cancelar a criação da tarefa?')) {
+                window.location.href = 'index.html';
+            }
+        });
+
+        const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyb4qfXQxVPNa8zTlTTd-E4KYgJH9WHys0QtZJjcTitwaB4PsHugDfOWquwqmqpoty0Hg/exec';
+        const WRITE_KEY = 'minha_chave_secreta_123';
+
+        document.getElementById('create-btn').addEventListener('click', async () => {
+            const solicitante = document.getElementById('solicitante').value.trim();
+            const responsaveis = document.getElementById('responsaveis').value.trim();
+            const titulo = document.getElementById('titulo').value.trim();
+            const descricao = document.getElementById('descricao').value.trim();
+            const prazo = document.getElementById('prazo').value;
+            const selectedPriority = document.querySelector('.priority-option.selected');
+
+            if (!selectedPriority) {
+                alert('Por favor, selecione uma prioridade.');
+                return;
+            }
+
+            const prioridade = selectedPriority.dataset.value;
+
+            if (!titulo) {
+                alert('Por favor, preencha o título da tarefa.');
+                return;
+            }
+
+            // Criar FormData em vez de JSON
+            const formData = new FormData();
+            formData.append('key', WRITE_KEY);
+            formData.append('titulo', titulo);
+            formData.append('descricao', descricao);
+            formData.append('solicitante', solicitante);
+            formData.append('responsaveis', responsaveis);
+            formData.append('prazo', prazo);
+            formData.append('prioridade', prioridade);
+
+            try {
+                // Converter FormData para URL encoded string
+                const params = new URLSearchParams();
+                for (const [key, value] of formData) {
+                    params.append(key, value);
+                }
+
+                const response = await fetch(ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: params.toString()
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Tarefa criada com sucesso!');
+                    window.location.href = 'visualizar.html';
+                } else {
+                    let errorMessage = 'Erro ao criar tarefa: ';
+                    switch (data.error) {
+                        case 'invalid_key':
+                            errorMessage += 'Chave de acesso inválida';
+                            break;
+                        case 'titulo_required':
+                            errorMessage += 'Título é obrigatório';
+                            break;
+                        default:
+                            errorMessage += data.error || 'Erro desconhecido';
+                    }
+                    alert(errorMessage);
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro de conexão. Verifique sua internet e tente novamente.');
+            }
+        });
+    </script>
+</body>
+
+</html>
